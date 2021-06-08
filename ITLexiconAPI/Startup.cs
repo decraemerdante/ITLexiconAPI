@@ -46,6 +46,16 @@ namespace ITLexiconAPI
 
             services.AddSingleton(mapper);
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "MyAllowSpecificOrigins",
+                                  builder =>
+                                  {
+                                      builder.AllowAnyOrigin().AllowAnyHeader()
+                                                            .AllowAnyMethod();
+                                  });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,7 +69,7 @@ namespace ITLexiconAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors("MyAllowSpecificOrigins");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
