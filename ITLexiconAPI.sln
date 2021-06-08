@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITLexiconAPI", "ITLexiconAPI\ITLexiconAPI.csproj", "{65DBE871-3188-4FCC-A911-5D63240609D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITLexiconAPI.DataAccessLayer", "ITLexiconAPI.DataAccessLayer\ITLexiconAPI.DataAccessLayer.csproj", "{F0BA2E6C-B712-48AD-922C-90982F2AF8B4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{65DBE871-3188-4FCC-A911-5D63240609D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65DBE871-3188-4FCC-A911-5D63240609D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65DBE871-3188-4FCC-A911-5D63240609D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65DBE871-3188-4FCC-A911-5D63240609D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0BA2E6C-B712-48AD-922C-90982F2AF8B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0BA2E6C-B712-48AD-922C-90982F2AF8B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0BA2E6C-B712-48AD-922C-90982F2AF8B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0BA2E6C-B712-48AD-922C-90982F2AF8B4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2648D010-16C2-4262-9B78-50410D04F26A}
+	EndGlobalSection
+EndGlobal
