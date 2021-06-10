@@ -16,8 +16,8 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
         public CategoryRepo(LexiconContext context)
         {
             this.context = context;
-        }    
-       
+        }
+
 
         public async Task Add(Category category)
         {
@@ -26,27 +26,32 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
         }
 
         public async Task Delete(Category category)
-        {         
-               
-                this.context.Categories.Remove(category);
-                await this.context.SaveChangesAsync();           
+        {
+            List<Article> articlesOfCategory = await this.context.Articles.Where(m => m.CategoryId == category.Id).ToListAsync();
+
+            foreach (var article in articlesOfCategory)
+            {
+                article.CategoryId = null;
+            }
+            this.context.Categories.Remove(category);
+            await this.context.SaveChangesAsync();
         }
 
         public async Task<Category> Get(Guid maskId)
         {
-            return await this.context.Categories.FirstOrDefaultAsync(c => c.MaskId == maskId);
+            return await this.context.Categories.Include(c => c.Articles).FirstOrDefaultAsync(c => c.MaskId == maskId);
         }
 
         public async Task<List<Category>> Get()
         {
-            return await this.context.Categories.ToListAsync();
+            return await this.context.Categories.Include(c => c.Articles).ToListAsync();
         }
 
         public async Task Update(Category category, string name)
         {
-           category.Name = name;
+            category.Name = name;
 
-           await this.context.SaveChangesAsync();
+            await this.context.SaveChangesAsync();
         }
     }
 }
