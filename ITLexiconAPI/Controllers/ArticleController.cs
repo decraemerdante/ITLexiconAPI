@@ -15,47 +15,58 @@ namespace ITLexiconAPI.Controllers
     [ApiController]
     public class ArticleController : ControllerBase
     {
-      
-            private IArticleRepo articleRepo;
-            private IMapper mapper;
 
-            public ArticleController(IArticleRepo articleRepo, IMapper mapper)
-            {
-                this.articleRepo = articleRepo;
-                this.mapper = mapper;
-            }
+        private IArticleRepo articleRepo;
+        private ICategoryRepo categoryRepo;
+        private IMapper mapper;
 
-            [HttpPost]
-            public async Task<ActionResult> Add([FromBody] ArticleDto article)
+        public ArticleController(IArticleRepo articleRepo, IMapper mapper, ICategoryRepo categoryRepo)
+        {
+            this.articleRepo = articleRepo;
+            this.mapper = mapper;
+            this.categoryRepo = categoryRepo;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<string>> Add([FromBody] ArticleDto article)
+        {
+            try
             {
-                try
+                if (article.CategoryMaskId.HasValue)
                 {
-                    await articleRepo.Add(mapper.Map<Article>(article));
-                    return Ok("Article has been added");
-                }
-                catch (Exception e) { }
+                    Category category = await categoryRepo.Get(article.CategoryMaskId.Value);
 
-                return BadRequest("Something went wrong");
+                    if (category != null)
+                    {
+                        article.CategoryId = category.Id;
+                    }
+                }
+                Guid maskId = await articleRepo.Add(mapper.Map<Article>(article));
+                return Ok(maskId.ToString());
             }
-            public async Task<ActionResult<List<ArticleDto>>> Get()
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+        }
+        public async Task<ActionResult<List<ArticleDto>>> Get()
+        {
+            try
             {
-                try
-                {
-                    List<Article> articles = await articleRepo.Get();
-                    return Ok(mapper.Map<List<ArticleDto>>(articles));
-                }
-                catch (Exception e) { }
-
-                return BadRequest("Something went wrong");
+                List<Article> articles = await articleRepo.Get();
+                return Ok(mapper.Map<List<ArticleDto>>(articles));
             }
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+        }
 
         [Route("Category/{maskId}")]
         public async Task<ActionResult<List<ArticleDto>>> GetByCategory(Guid maskId)
         {
             try
             {
-                List<Article> articles = await articleRepo.GetByCategory(maskId);               
-                return Ok(mapper.Map<List<ArticleDto>>(articles));              
+                List<Article> articles = await articleRepo.GetByCategory(maskId);
+                return Ok(mapper.Map<List<ArticleDto>>(articles));
             }
             catch (Exception e) { }
 
@@ -63,61 +74,61 @@ namespace ITLexiconAPI.Controllers
         }
 
         [Route("{maskId}")]
-            public async Task<ActionResult<ArticleDto>> Get(Guid maskId)
+        public async Task<ActionResult<ArticleDto>> Get(Guid maskId)
+        {
+            try
             {
-                try
-                {
-                    Article article = await articleRepo.Get(maskId);
+                Article article = await articleRepo.Get(maskId);
 
-                    if (article != null)
-                        return Ok(mapper.Map<ArticleDto>(article));
+                if (article != null)
+                    return Ok(mapper.Map<ArticleDto>(article));
 
-                    return NotFound("Article does not exist");
-                }
-                catch (Exception e) { }
-
-                return BadRequest("Something went wrong");
+                return NotFound("Article does not exist");
             }
+            catch (Exception e) { }
 
-            [HttpPut]
-            public async Task<ActionResult> Update([FromBody] ArticleDto article)
-            {
-                try
-                {
-                    Article articleOld = await articleRepo.Get(article.MaskId);
-
-                    if (articleOld != null)
-                    {
-                        await articleRepo.Update(articleOld, mapper.Map<Article>(article));
-                        return Ok("Article has been changed");
-                    }
-
-                    return NotFound("Article does not exist");
-                }
-                catch (Exception e) { }
-
-                return BadRequest("Something went wrong");
-            }
-
-
-            [HttpDelete]
-            public async Task<ActionResult> Delete(Guid maskId)
-            {
-                try
-                {
-                    Article article = await articleRepo.Get(maskId);
-
-                    if (article != null)
-                    {
-                        await articleRepo.Delete(article);
-                        return Ok("Article has been deleted");
-                    }
-
-                    return NotFound("Article does not exist");
-                }
-                catch (Exception e) { }
-
-                return BadRequest("Something went wrong");
-            }
+            return BadRequest("Something went wrong");
         }
+
+        [HttpPut]
+        public async Task<ActionResult> Update([FromBody] ArticleDto article)
+        {
+            try
+            {
+                Article articleOld = await articleRepo.Get(article.MaskId);
+
+                if (articleOld != null)
+                {
+                    await articleRepo.Update(articleOld, mapper.Map<Article>(article));
+                    return Ok("Article has been changed");
+                }
+
+                return NotFound("Article does not exist");
+            }
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+        }
+
+
+        [HttpDelete]
+        public async Task<ActionResult> Delete(Guid maskId)
+        {
+            try
+            {
+                Article article = await articleRepo.Get(maskId);
+
+                if (article != null)
+                {
+                    await articleRepo.Delete(article);
+                    return Ok("Article has been deleted");
+                }
+
+                return NotFound("Article does not exist");
+            }
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+        }
+    }
 }

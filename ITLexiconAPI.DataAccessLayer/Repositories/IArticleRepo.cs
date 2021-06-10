@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ITLexiconAPI.DataAccessLayer.Repositories
 {
-   public interface IArticleRepo
+    public interface IArticleRepo
     {
-        Task Add(Article article);
+        Task<Guid> Add(Article article);
         Task<Article> Get(Guid maskId);
         Task<List<Article>> Get();
         Task Delete(Article article);

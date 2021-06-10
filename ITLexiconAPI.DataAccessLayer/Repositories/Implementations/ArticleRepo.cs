@@ -17,10 +17,12 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
         {
             this.context = context;
         }
-        public async Task Add(Article article)
+        public async Task<Guid> Add(Article article)
         {
             await this.context.AddAsync(article);
             await this.context.SaveChangesAsync();
+
+            return article.MaskId;
         }
 
         public async Task Delete(Article article)
