@@ -13,5 +13,6 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories
         Task<List<Category>> Get();
         Task Delete(Category category);
         Task Update(Category category, string name);
+        Task<Category> GetById(int id);
     }
 }

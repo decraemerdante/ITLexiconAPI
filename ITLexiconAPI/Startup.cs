@@ -46,14 +46,16 @@ namespace ITLexiconAPI
 
             services.AddSingleton(mapper);
 
+          
             services.AddCors(options =>
             {
-                options.AddPolicy(name: "MyAllowSpecificOrigins",
-                                  builder =>
-                                  {
-                                      builder.AllowAnyOrigin().AllowAnyHeader()
-                                                            .AllowAnyMethod();
-                                  });
+                options.AddDefaultPolicy(
+             builder =>
+             {
+                 builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+
+             });
+
             });
 
         }
@@ -66,10 +68,11 @@ namespace ITLexiconAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors();
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseCors("MyAllowSpecificOrigins");
+           
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

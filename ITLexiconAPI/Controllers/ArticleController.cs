@@ -2,6 +2,7 @@
 using ITLexiconAPI.DataAccessLayer.Models;
 using ITLexiconAPI.DataAccessLayer.Repositories;
 using ITLexiconAPI.DTO;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace ITLexiconAPI.Controllers
 {
     [Route("api/[controller]")]
+    
     [ApiController]
     public class ArticleController : ControllerBase
     {
@@ -32,7 +34,7 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                if (article.CategoryMaskId.HasValue)
+                if (article.CategoryMaskId.HasValue && article.CategoryMaskId != Guid.Empty)
                 {
                     Category category = await categoryRepo.Get(article.CategoryMaskId.Value);
 
@@ -81,7 +83,19 @@ namespace ITLexiconAPI.Controllers
                 Article article = await articleRepo.Get(maskId);
 
                 if (article != null)
-                    return Ok(mapper.Map<ArticleDto>(article));
+                {
+                    ArticleDto articleDto = mapper.Map<ArticleDto>(article);
+                    Category cat = new Category();
+
+                    if (articleDto.CategoryId.HasValue) 
+                     cat = await categoryRepo.GetById(articleDto.CategoryId.Value);
+
+                    if (cat != null)
+                        articleDto.CategoryMaskId = cat.MaskId;
+
+                    return Ok(articleDto);
+                }
+                   
 
                 return NotFound("Article does not exist");
             }

@@ -2,6 +2,7 @@
 using ITLexiconAPI.DataAccessLayer.Models;
 using ITLexiconAPI.DataAccessLayer.Repositories;
 using ITLexiconAPI.DTO;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace ITLexiconAPI.Controllers
 {
     [Route("api/[controller]")]
+  
     [ApiController]
     public class CategoryController : ControllerBase
     {
