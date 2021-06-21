@@ -17,6 +17,8 @@ namespace ITLexiconAPI.DataAccessLayer.DB
 
         public DbSet<Category> Categories { get; set; }
 
+        public DbSet<LinkedArticles> LinkedArticles { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

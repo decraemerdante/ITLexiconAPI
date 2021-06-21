@@ -26,26 +26,14 @@ namespace ITLexiconAPI.Controllers
             this.mapper = mapper;
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Add([FromBody] string name)
-        {
-            try
-            {
-                await categoryRepo.Add(new Category() { Name = name });
-                return Ok("Category has been added");
-            }
-            catch (Exception e) { }
-
-            return BadRequest("Something went wrong");
-        }
         public async Task<ActionResult<List<CategoryDto>>> Get()
-        {            
+        {
             try
             {
                 List<Category> categories = await categoryRepo.Get();
                 return Ok(mapper.Map<List<CategoryDto>>(categories));
             }
-            catch(Exception e) { }
+            catch (Exception e) { }
 
             return BadRequest("Something went wrong");
         }
@@ -57,15 +45,28 @@ namespace ITLexiconAPI.Controllers
             {
                 Category category = await categoryRepo.Get(maskId);
 
-                if(category != null)
+                if (category != null)
                     return Ok(mapper.Map<CategoryDto>(category));
 
                 return NotFound("Category does not exist");
             }
             catch (Exception e) { }
 
-            return BadRequest("Something went wrong");            
+            return BadRequest("Something went wrong");
         }
+
+        [HttpPost]
+        public async Task<ActionResult> Add([FromBody] string name)
+        {
+            try
+            {
+                await categoryRepo.Add(new Category() { Name = name });
+                return Ok("Category has been added");
+            }
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+        }       
         
         [HttpPut]
         public async Task<ActionResult> Update([FromBody] CategoryDto category)

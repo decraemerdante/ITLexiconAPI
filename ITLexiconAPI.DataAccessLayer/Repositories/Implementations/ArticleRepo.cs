@@ -25,6 +25,40 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
             return article.MaskId;
         }
 
+        public async Task AddLinkedArticle(Guid articleId, Guid linkedArticleId)
+        {
+            List<Guid> neededArticles = new List<Guid>()
+            {
+                articleId,
+                linkedArticleId
+            };
+
+            List<Article> articles = await GetArticlesByIds(neededArticles);
+
+            if(articles != null && articles.Any() && articles.Count == 2)
+            {
+                Article firstArticle = articles.FirstOrDefault();
+                Article lastArticle = articles.LastOrDefault();
+
+               await AddLinkedArticleToArticle(firstArticle, lastArticle);
+               await AddLinkedArticleToArticle(lastArticle, firstArticle);
+            }
+        }
+
+        private async Task AddLinkedArticleToArticle(Article article, Article LinkedArticle)
+        {
+            article.LinkedArticles.Add(new LinkedArticles()
+            {
+                LinkedArticleId = LinkedArticle.Id
+            });
+            await this.context.SaveChangesAsync();
+        }
+
+        private async Task<List<Article>> GetArticlesByIds(List<Guid> articleIds)
+        {
+            return await this.context.Articles.Include(m => m.LinkedArticles).Where(m => articleIds.Contains(m.MaskId)).ToListAsync();
+        }
+
         public async Task Delete(Article article)
         {
             this.context.Remove(article);
@@ -44,6 +78,28 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
         public async Task<List<Article>> GetByCategory(Guid maskId)
         {
             return await this.context.Articles.Include(a => a.Category).Where(a => a.CategoryId.HasValue && a.Category.MaskId == maskId).ToListAsync();
+        }
+
+        public async Task<List<Article>> GetLinkedItems(Guid maskId)
+        {
+            List<Article> linkedArticles = new List<Article>();
+
+            Article article = await this.context.Articles.Include(a => a.LinkedArticles).FirstOrDefaultAsync(a => a.MaskId == maskId);
+
+            if(article != null && article.LinkedArticles != null && article.LinkedArticles.Any())
+            {
+                List<int> linkedArticleIds = article.LinkedArticles.Select(m => m.LinkedArticleId).ToList();
+
+                linkedArticles = await GetArticlesByIds(linkedArticleIds);
+            }              
+          
+
+            return linkedArticles;
+        }
+
+        private async Task<List<Article>> GetArticlesByIds(List<int> articleIds)
+        {
+            return await this.context.Articles.Include(m => m.LinkedArticles).Where(m => articleIds.Contains(m.Id)).ToListAsync();
         }
 
         public async Task Update(Article article, Article articleNew)

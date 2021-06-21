@@ -14,6 +14,6 @@ namespace ITLexiconAPI.DataAccessLayer.Models
         public Guid MaskId { get; set; }
         public int? CategoryId { get; set; }
         public virtual Category Category { get; set; }
-       
+        public virtual ICollection<LinkedArticles> LinkedArticles { get; set; }       
     }
 }
