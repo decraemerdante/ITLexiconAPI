@@ -126,7 +126,7 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                await this.articleRepo.AddLinkedArticle(linkedArticles.ArticleId, linkedArticles.LinkedArticleId);
+                await this.articleRepo.HandleLinkedArticleAction(linkedArticles.ArticleId, linkedArticles.LinkedArticleId);
                 return Ok("Linked article added");
             }
             catch (Exception e) { }
@@ -178,6 +178,23 @@ namespace ITLexiconAPI.Controllers
 
             return BadRequest("Something went wrong");
         }
-        #endregion
-    }
+
+        [HttpDelete]
+        [Route("Linked")]
+
+        public async Task<ActionResult> DeleteLinkedArticle([FromBody] LinkedArticlesDto linkedArticles)
+        {
+            try
+            {               
+                    await articleRepo.HandleLinkedArticleAction(linkedArticles.ArticleId, linkedArticles.LinkedArticleId, true);
+                    return Ok("Linked article has been deleted");            
+            }
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+
+        }
+
+            #endregion
+        }
 }

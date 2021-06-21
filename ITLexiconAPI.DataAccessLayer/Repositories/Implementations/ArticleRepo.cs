@@ -25,23 +25,36 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
             return article.MaskId;
         }
 
-        public async Task AddLinkedArticle(Guid articleId, Guid linkedArticleId)
+        public async Task HandleLinkedArticleAction(Guid articleId, Guid linkedArticleId, bool isDelete = false)
         {
-            List<Guid> neededArticles = new List<Guid>()
-            {
-                articleId,
-                linkedArticleId
-            };
-
-            List<Article> articles = await GetArticlesByIds(neededArticles);
+            List<Article> articles = await GetLinkedArticleArticles(articleId, linkedArticleId);
 
             if(articles != null && articles.Any() && articles.Count == 2)
             {
                 Article firstArticle = articles.FirstOrDefault();
                 Article lastArticle = articles.LastOrDefault();
 
-               await AddLinkedArticleToArticle(firstArticle, lastArticle);
-               await AddLinkedArticleToArticle(lastArticle, firstArticle);
+                if (isDelete)
+                {
+                    await DeleteLinkedArticle(firstArticle, lastArticle);
+                    await DeleteLinkedArticle(lastArticle, firstArticle);
+                }
+                else
+                {
+                    await AddLinkedArticleToArticle(firstArticle, lastArticle);
+                    await AddLinkedArticleToArticle(lastArticle, firstArticle);
+                }            
+            }
+        }
+
+        private async Task DeleteLinkedArticle(Article article, Article linkedArticle)
+        {
+            LinkedArticles linkedArticles = await this.context.LinkedArticles.FirstOrDefaultAsync(m => m.ArticleId == article.Id && m.LinkedArticleId == linkedArticle.Id);
+
+            if(linkedArticles != null)
+            {
+                this.context.LinkedArticles.Remove(linkedArticles);
+                await this.context.SaveChangesAsync();
             }
         }
 
@@ -57,6 +70,17 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
         private async Task<List<Article>> GetArticlesByIds(List<Guid> articleIds)
         {
             return await this.context.Articles.Include(m => m.LinkedArticles).Where(m => articleIds.Contains(m.MaskId)).ToListAsync();
+        }
+
+        private async Task<List<Article>> GetLinkedArticleArticles(Guid articleId, Guid linkedArticleId)
+        {
+            List<Guid> neededArticles = new List<Guid>()
+            {
+                articleId,
+                linkedArticleId
+            };
+
+            return await GetArticlesByIds(neededArticles);
         }
 
         public async Task Delete(Article article)
@@ -109,6 +133,6 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
             article.CategoryId = articleNew.CategoryId;
 
             await this.context.SaveChangesAsync();
-        }
+        }       
     }
 }
