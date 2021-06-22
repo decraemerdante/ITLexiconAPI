@@ -95,6 +95,24 @@ namespace ITLexiconAPI.Controllers
 
             return BadRequest("Something went wrong");
         }
+
+         [Route("Linked/Overview/{maskId}")]
+        public async Task<ActionResult<LinkedArticleOverviewDto>> GetLinkedArticlesOverview(Guid maskId)
+        {
+            try
+            {
+                List<ArticleDto> allArticles = mapper.Map<List<ArticleDto>>(await articleRepo.Get());
+                LinkedArticleOverviewDto overviewDto = new LinkedArticleOverviewDto(){
+                    MainArticle = allArticles.FirstOrDefault(m => m.MaskId == maskId),
+                    LinkedArticles = mapper.Map<List<ArticleDto>>(await articleRepo.GetLinkedItems(maskId)),
+                    AllArticles = allArticles
+                };
+                return Ok(overviewDto);
+            }
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+        }
         #endregion
 
         #region Add
