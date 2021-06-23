@@ -28,7 +28,94 @@ namespace ITLexiconAPI.Controllers
             this.mapper = mapper;
             this.categoryRepo = categoryRepo;
         }
+        #region Get
+        public async Task<ActionResult<List<ArticleDto>>> Get()
+        {
+            try
+            {
+                List<Article> articles = await articleRepo.Get();
+                return Ok(mapper.Map<List<ArticleDto>>(articles));
+            }
+            catch (Exception e) { }
 
+            return BadRequest("Something went wrong");
+        }
+
+        [Route("{maskId}")]
+        public async Task<ActionResult<ArticleDto>> Get(Guid maskId)
+        {
+            try
+            {
+                Article article = await articleRepo.Get(maskId);
+
+                if (article != null)
+                {
+                    ArticleDto articleDto = mapper.Map<ArticleDto>(article);
+                    Category cat = new Category();
+
+                    if (articleDto.CategoryId.HasValue)
+                        cat = await categoryRepo.GetById(articleDto.CategoryId.Value);
+
+                    if (cat != null)
+                        articleDto.CategoryMaskId = cat.MaskId;
+
+                    return Ok(articleDto);
+                }
+
+
+                return NotFound("Article does not exist");
+            }
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+        }
+
+        [Route("Category/{maskId}")]
+        public async Task<ActionResult<List<ArticleDto>>> GetByCategory(Guid maskId)
+        {
+            try
+            {
+                List<Article> articles = await articleRepo.GetByCategory(maskId);
+                return Ok(mapper.Map<List<ArticleDto>>(articles));
+            }
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+        }
+
+        [Route("Linked/{maskId}")]
+        public async Task<ActionResult<List<ArticleDto>>> GetLinkedArticles(Guid maskId)
+        {
+            try
+            {
+                List<Article> articles = await articleRepo.GetLinkedItems(maskId);
+                return Ok(mapper.Map<List<ArticleDto>>(articles));
+            }
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+        }
+
+         [Route("Linked/Overview/{maskId}")]
+        public async Task<ActionResult<LinkedArticleOverviewDto>> GetLinkedArticlesOverview(Guid maskId)
+        {
+            try
+            {
+                List<ArticleDto> allArticles = mapper.Map<List<ArticleDto>>(await articleRepo.Get());
+                LinkedArticleOverviewDto overviewDto = new LinkedArticleOverviewDto(){
+                    MainArticle = allArticles.FirstOrDefault(m => m.MaskId == maskId),
+                    LinkedArticles = mapper.Map<List<ArticleDto>>(await articleRepo.GetLinkedItems(maskId)),
+                    AllArticles = allArticles
+                };
+                return Ok(overviewDto);
+            }
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+        }
+        #endregion
+
+        #region Add
         [HttpPost]
         public async Task<ActionResult<string>> Add([FromBody] ArticleDto article)
         {
@@ -50,60 +137,24 @@ namespace ITLexiconAPI.Controllers
 
             return BadRequest("Something went wrong");
         }
-        public async Task<ActionResult<List<ArticleDto>>> Get()
+
+        [HttpPost]
+        [Route("Linked")]
+        public async Task<ActionResult<string>> AddLinkedArticle([FromBody] LinkedArticlesDto linkedArticles)
         {
             try
             {
-                List<Article> articles = await articleRepo.Get();
-                return Ok(mapper.Map<List<ArticleDto>>(articles));
+                await this.articleRepo.HandleLinkedArticleAction(linkedArticles.ArticleId, linkedArticles.LinkedArticleId);
+                return Ok("Linked article added");
             }
             catch (Exception e) { }
 
             return BadRequest("Something went wrong");
         }
 
-        [Route("Category/{maskId}")]
-        public async Task<ActionResult<List<ArticleDto>>> GetByCategory(Guid maskId)
-        {
-            try
-            {
-                List<Article> articles = await articleRepo.GetByCategory(maskId);
-                return Ok(mapper.Map<List<ArticleDto>>(articles));
-            }
-            catch (Exception e) { }
+        #endregion
 
-            return BadRequest("Something went wrong");
-        }
-
-        [Route("{maskId}")]
-        public async Task<ActionResult<ArticleDto>> Get(Guid maskId)
-        {
-            try
-            {
-                Article article = await articleRepo.Get(maskId);
-
-                if (article != null)
-                {
-                    ArticleDto articleDto = mapper.Map<ArticleDto>(article);
-                    Category cat = new Category();
-
-                    if (articleDto.CategoryId.HasValue) 
-                     cat = await categoryRepo.GetById(articleDto.CategoryId.Value);
-
-                    if (cat != null)
-                        articleDto.CategoryMaskId = cat.MaskId;
-
-                    return Ok(articleDto);
-                }
-                   
-
-                return NotFound("Article does not exist");
-            }
-            catch (Exception e) { }
-
-            return BadRequest("Something went wrong");
-        }
-
+        #region Edit
         [HttpPut]
         public async Task<ActionResult> Update([FromBody] ArticleDto article)
         {
@@ -123,8 +174,9 @@ namespace ITLexiconAPI.Controllers
 
             return BadRequest("Something went wrong");
         }
+        #endregion
 
-
+        #region Delete
         [HttpDelete]
         public async Task<ActionResult> Delete(Guid maskId)
         {
@@ -144,5 +196,23 @@ namespace ITLexiconAPI.Controllers
 
             return BadRequest("Something went wrong");
         }
-    }
+
+        [HttpDelete]
+        [Route("Linked")]
+
+        public async Task<ActionResult> DeleteLinkedArticle([FromBody] LinkedArticlesDto linkedArticles)
+        {
+            try
+            {               
+                    await articleRepo.HandleLinkedArticleAction(linkedArticles.ArticleId, linkedArticles.LinkedArticleId, true);
+                    return Ok("Linked article has been deleted");            
+            }
+            catch (Exception e) { }
+
+            return BadRequest("Something went wrong");
+
+        }
+
+            #endregion
+        }
 }

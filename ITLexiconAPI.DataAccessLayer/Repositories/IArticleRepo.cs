@@ -14,5 +14,8 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories
         Task Delete(Article article);
         Task Update(Article article, Article articleNew);
         Task<List<Article>> GetByCategory(Guid maskId);
+        Task<List<Article>> GetLinkedItems(Guid maskId);
+        Task HandleLinkedArticleAction(Guid articleId, Guid linkedArticleId, bool isDelete = false);
+       
     }
 }
