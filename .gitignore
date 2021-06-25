@@ -340,3 +340,4 @@ ASALocalRun/
 healthchecksdb
 ITLexiconAPI/appsettings.json
 ITLexiconAPI/appsettings.Development.json
+ITLexiconAPI/appsettings.json
