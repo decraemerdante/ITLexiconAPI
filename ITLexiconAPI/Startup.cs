@@ -1,8 +1,11 @@
 using AutoMapper;
+using ITLexiconAPI.BusinessLayer.DTO.Profiles;
+using ITLexiconAPI.BusinessLayer.Repositories;
+using ITLexiconAPI.BusinessLayer.Repositories.Implementations;
 using ITLexiconAPI.DataAccessLayer.DB;
 using ITLexiconAPI.DataAccessLayer.Repositories;
 using ITLexiconAPI.DataAccessLayer.Repositories.Implementations;
-using ITLexiconAPI.DTO.Profiles;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -46,6 +49,10 @@ namespace ITLexiconAPI
             services.AddDbContext<LexiconContext>(item => item.UseSqlServer(Configuration.GetConnectionString("ITLexiconDB")));
             services.AddTransient<ICategoryRepo, CategoryRepo>();
             services.AddTransient<IArticleRepo, ArticleRepo>();
+            services.AddTransient<ILinkedRepo, LinkedRepo>();
+            services.AddTransient<ICategoryBLRepo, CategoryBLRepo>();
+            services.AddTransient<IArticleBLRepo, ArticleBLRepo>();
+            services.AddTransient<ILinkedBLRepo, LinkedBLRepo>();
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new ArticleProfile());

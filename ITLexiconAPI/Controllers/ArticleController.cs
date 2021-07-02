@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
-using ITLexiconAPI.DataAccessLayer.Models;
-using ITLexiconAPI.DataAccessLayer.Repositories;
-using ITLexiconAPI.DTO;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
+using ITLexiconAPI.BusinessLayer.DTO;
+using ITLexiconAPI.BusinessLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ITLexiconAPI.Controllers
@@ -18,11 +14,11 @@ namespace ITLexiconAPI.Controllers
     public class ArticleController : ControllerBase
     {
 
-        private IArticleRepo articleRepo;
-        private ICategoryRepo categoryRepo;
+        private IArticleBLRepo articleRepo;
+        private ICategoryBLRepo categoryRepo;
         private IMapper mapper;
 
-        public ArticleController(IArticleRepo articleRepo, IMapper mapper, ICategoryRepo categoryRepo)
+        public ArticleController(IArticleBLRepo articleRepo, IMapper mapper, ICategoryBLRepo categoryRepo)
         {
             this.articleRepo = articleRepo;
             this.mapper = mapper;
@@ -33,7 +29,7 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                List<Article> articles = await articleRepo.Get();
+                List<ArticleDto> articles = await articleRepo.Get();
                 return Ok(mapper.Map<List<ArticleDto>>(articles));
             }
             catch (Exception e) { }
@@ -46,12 +42,12 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                Article article = await articleRepo.Get(maskId);
+                ArticleDto articleDto = await articleRepo.Get(maskId);
 
-                if (article != null)
+                if (articleDto != null)
                 {
-                    ArticleDto articleDto = mapper.Map<ArticleDto>(article);
-                    Category cat = new Category();
+                   
+                    CategoryDto cat = new CategoryDto();
 
                     if (articleDto.CategoryId.HasValue)
                         cat = await categoryRepo.GetById(articleDto.CategoryId.Value);
@@ -75,7 +71,7 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                List<Article> articles = await articleRepo.GetByCategory(maskId);
+                List<ArticleDto> articles = await articleRepo.GetByCategory(maskId);
                 return Ok(mapper.Map<List<ArticleDto>>(articles));
             }
             catch (Exception e) { }
@@ -83,36 +79,7 @@ namespace ITLexiconAPI.Controllers
             return BadRequest("Something went wrong");
         }
 
-        [Route("Linked/{maskId}")]
-        public async Task<ActionResult<List<ArticleDto>>> GetLinkedArticles(Guid maskId)
-        {
-            try
-            {
-                List<Article> articles = await articleRepo.GetLinkedItems(maskId);
-                return Ok(mapper.Map<List<ArticleDto>>(articles));
-            }
-            catch (Exception e) { }
-
-            return BadRequest("Something went wrong");
-        }
-
-         [Route("Linked/Overview/{maskId}")]
-        public async Task<ActionResult<LinkedArticleOverviewDto>> GetLinkedArticlesOverview(Guid maskId)
-        {
-            try
-            {
-                List<ArticleDto> allArticles = mapper.Map<List<ArticleDto>>(await articleRepo.Get());
-                LinkedArticleOverviewDto overviewDto = new LinkedArticleOverviewDto(){
-                    MainArticle = allArticles.FirstOrDefault(m => m.MaskId == maskId),
-                    LinkedArticles = mapper.Map<List<ArticleDto>>(await articleRepo.GetLinkedItems(maskId)),
-                    AllArticles = allArticles
-                };
-                return Ok(overviewDto);
-            }
-            catch (Exception e) { }
-
-            return BadRequest("Something went wrong");
-        }
+       
         #endregion
 
         #region Add
@@ -120,37 +87,14 @@ namespace ITLexiconAPI.Controllers
         public async Task<ActionResult<string>> Add([FromBody] ArticleDto article)
         {
             try
-            {
-                if (article.CategoryMaskId.HasValue && article.CategoryMaskId != Guid.Empty)
-                {
-                    Category category = await categoryRepo.Get(article.CategoryMaskId.Value);
-
-                    if (category != null)
-                    {
-                        article.CategoryId = category.Id;
-                    }
-                }
-                Guid maskId = await articleRepo.Add(mapper.Map<Article>(article));
+            {               
+                Guid maskId = await articleRepo.Add(article);
                 return Ok(maskId.ToString());
             }
             catch (Exception e) { }
 
             return BadRequest("Something went wrong");
-        }
-
-        [HttpPost]
-        [Route("Linked")]
-        public async Task<ActionResult<string>> AddLinkedArticle([FromBody] LinkedArticlesDto linkedArticles)
-        {
-            try
-            {
-                await this.articleRepo.HandleLinkedArticleAction(linkedArticles.ArticleId, linkedArticles.LinkedArticleId);
-                return Ok("Linked article added");
-            }
-            catch (Exception e) { }
-
-            return BadRequest("Something went wrong");
-        }
+        }     
 
         #endregion
 
@@ -160,15 +104,10 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                Article articleOld = await articleRepo.Get(article.MaskId);
-
-                if (articleOld != null)
-                {
-                    await articleRepo.Update(articleOld, mapper.Map<Article>(article));
+               
+                    await articleRepo.Update(article);
                     return Ok("Article has been changed");
-                }
-
-                return NotFound("Article does not exist");
+                
             }
             catch (Exception e) { }
 
@@ -182,36 +121,14 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                Article article = await articleRepo.Get(maskId);
+                    await articleRepo.Delete(maskId);
+                    return Ok("Article has been deleted");              
 
-                if (article != null)
-                {
-                    await articleRepo.Delete(article);
-                    return Ok("Article has been deleted");
-                }
-
-                return NotFound("Article does not exist");
             }
             catch (Exception e) { }
 
             return BadRequest("Something went wrong");
-        }
-
-        [HttpDelete]
-        [Route("Linked")]
-
-        public async Task<ActionResult> DeleteLinkedArticle([FromBody] LinkedArticlesDto linkedArticles)
-        {
-            try
-            {               
-                    await articleRepo.HandleLinkedArticleAction(linkedArticles.ArticleId, linkedArticles.LinkedArticleId, true);
-                    return Ok("Linked article has been deleted");            
-            }
-            catch (Exception e) { }
-
-            return BadRequest("Something went wrong");
-
-        }
+        }       
 
             #endregion
         }

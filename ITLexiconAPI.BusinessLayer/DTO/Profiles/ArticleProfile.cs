@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ITLexiconAPI.DTO.Profiles
+namespace ITLexiconAPI.BusinessLayer.DTO.Profiles
 {
     public class ArticleProfile:  Profile
     {
