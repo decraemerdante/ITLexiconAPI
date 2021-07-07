@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
-using ITLexiconAPI.DataAccessLayer.Models;
-using ITLexiconAPI.DataAccessLayer.Repositories;
-using ITLexiconAPI.DTO;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
+using ITLexiconAPI.BusinessLayer.DTO;
+using ITLexiconAPI.BusinessLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ITLexiconAPI.Controllers
@@ -17,10 +13,10 @@ namespace ITLexiconAPI.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private ICategoryRepo categoryRepo;
+        private ICategoryBLRepo categoryRepo;
         private IMapper mapper;
 
-        public CategoryController(ICategoryRepo categoryRepo, IMapper mapper)
+        public CategoryController(ICategoryBLRepo categoryRepo, IMapper mapper)
         {
             this.categoryRepo = categoryRepo;
             this.mapper = mapper;
@@ -30,8 +26,8 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                List<Category> categories = await categoryRepo.Get();
-                return Ok(mapper.Map<List<CategoryDto>>(categories));
+                List<CategoryDto> categories = await categoryRepo.Get();
+                return Ok(categories);
             }
             catch (Exception e) { }
 
@@ -43,10 +39,10 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                Category category = await categoryRepo.Get(maskId);
+                CategoryDto category = await categoryRepo.Get(maskId);
 
                 if (category != null)
-                    return Ok(mapper.Map<CategoryDto>(category));
+                    return Ok(category);
 
                 return NotFound("Category does not exist");
             }
@@ -60,7 +56,7 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                await categoryRepo.Add(new Category() { Name = name });
+                await categoryRepo.Add(new CategoryDto() { Name = name });
                 return Ok("Category has been added");
             }
             catch (Exception e) { }
@@ -73,15 +69,8 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                Category categoryOld = await categoryRepo.Get(category.MaskId);
-
-                if (categoryOld != null)
-                {
-                    await categoryRepo.Update(categoryOld, category.Name);
-                    return Ok("Category has been changed");
-                }
-
-                return NotFound("Category does not exist");
+               await categoryRepo.Update(category);
+               return Ok("Category has been changed");               
             }
             catch (Exception e) { }
 
@@ -94,15 +83,8 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {
-                Category category = await categoryRepo.Get(maskId);
-
-                if(category != null)
-                {
-                    await categoryRepo.Delete(category);
-                    return Ok("Category has been deleted");
-                }
-
-                return NotFound("Category does not exist");
+               await categoryRepo.Delete(maskId);
+               return Ok("Category has been deleted");                
             }
             catch (Exception e) { }
 

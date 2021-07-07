@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITLexiconAPI", "ITLexiconAPI\ITLexiconAPI.csproj", "{65DBE871-3188-4FCC-A911-5D63240609D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ITLexiconAPI", "ITLexiconAPI\ITLexiconAPI.csproj", "{65DBE871-3188-4FCC-A911-5D63240609D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITLexiconAPI.DataAccessLayer", "ITLexiconAPI.DataAccessLayer\ITLexiconAPI.DataAccessLayer.csproj", "{F0BA2E6C-B712-48AD-922C-90982F2AF8B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ITLexiconAPI.DataAccessLayer", "ITLexiconAPI.DataAccessLayer\ITLexiconAPI.DataAccessLayer.csproj", "{F0BA2E6C-B712-48AD-922C-90982F2AF8B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITLexiconAPI.BusinessLayer", "ITLexiconAPI.BusinessLayer\ITLexiconAPI.BusinessLayer.csproj", "{2DFC4567-D036-4289-B597-5729A5B1037B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F0BA2E6C-B712-48AD-922C-90982F2AF8B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0BA2E6C-B712-48AD-922C-90982F2AF8B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0BA2E6C-B712-48AD-922C-90982F2AF8B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DFC4567-D036-4289-B597-5729A5B1037B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DFC4567-D036-4289-B597-5729A5B1037B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DFC4567-D036-4289-B597-5729A5B1037B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DFC4567-D036-4289-B597-5729A5B1037B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
