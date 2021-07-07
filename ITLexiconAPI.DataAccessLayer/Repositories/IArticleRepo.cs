@@ -8,7 +8,7 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories
 {
     public interface IArticleRepo
     {
-        Task<Guid> Add(Article article);
+        Task<Article> Add(Article article);
         Task<Article> Get(Guid maskId);
         Task<List<Article>> Get();
         Task Delete(Article article);

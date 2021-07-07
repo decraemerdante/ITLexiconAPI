@@ -19,6 +19,8 @@ namespace ITLexiconAPI.DataAccessLayer.DB
 
         public DbSet<LinkedArticles> LinkedArticles { get; set; }
 
+        public DbSet<Changelog> Changelogs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
