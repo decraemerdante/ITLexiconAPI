@@ -12,5 +12,7 @@ namespace ITLexiconAPI.BusinessLayer.DTO
         public Guid MaskId { get; set; }
         public int? CategoryId { get; set; }
         public Guid? CategoryMaskId { get; set; }
+
+        public List<ChangeLogDto> ChangeLogs { get; set; }
     }
 }

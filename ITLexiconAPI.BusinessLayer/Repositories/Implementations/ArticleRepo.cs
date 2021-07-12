@@ -14,12 +14,14 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
         private IArticleRepo articleRepo;
         private IMapper mapper;
         private ICategoryRepo categoryRepo;
+        private  IChangelogRepo changelogRepo;
 
-        public ArticleBLRepo(IArticleRepo articleRepo, IMapper mapper, ICategoryRepo categoryRepo)
+        public ArticleBLRepo(IArticleRepo articleRepo, IMapper mapper, ICategoryRepo categoryRepo, IChangelogRepo changelogRepo)
         {
             this.articleRepo = articleRepo;
             this.mapper = mapper;
             this.categoryRepo = categoryRepo;
+            this.changelogRepo = changelogRepo;
         }
         public async Task<Guid> Add(ArticleDto article)
         {
@@ -34,7 +36,11 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
                 }
             }
 
-            return await articleRepo.Add(mapper.Map<Article>(article));
+            Article createdArticle = await articleRepo.Add(mapper.Map<Article>(article));
+
+            await changelogRepo.Add(createdArticle, Changelog.LogItemEnum.CREATED);
+
+            return createdArticle.MaskId;
         }
 
         public async Task Delete(Guid maskId)
@@ -42,6 +48,7 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
             Article articleToDelete = await articleRepo.Get(maskId);
             if(articleToDelete != null)
             {
+                await changelogRepo.DeleteChangelogsOfArticle(articleToDelete);
                 await articleRepo.Delete(articleToDelete);
             }            
         }
@@ -70,6 +77,7 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
                 await articleRepo.Update(
                      articleOld,
                      mapper.Map<Article>(articleNew));
+                await changelogRepo.Add(articleOld, Changelog.LogItemEnum.UPDATED);
             }         
         }
     }

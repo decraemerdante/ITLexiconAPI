@@ -109,7 +109,10 @@ namespace ITLexiconAPI.Controllers
                     return Ok("Article has been changed");
                 
             }
-            catch (Exception e) { }
+            catch (Exception e) 
+            {
+            
+            }
 
             return BadRequest("Something went wrong");
         }
@@ -125,7 +128,11 @@ namespace ITLexiconAPI.Controllers
                     return Ok("Article has been deleted");              
 
             }
-            catch (Exception e) { }
+            catch (Exception e) 
+            { 
+
+
+            }
 
             return BadRequest("Something went wrong");
         }       

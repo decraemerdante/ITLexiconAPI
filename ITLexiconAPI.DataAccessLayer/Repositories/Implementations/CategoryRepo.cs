@@ -44,7 +44,7 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
 
         public async Task<List<Category>> Get()
         {
-            return await this.context.Categories.Include(c => c.Articles).ToListAsync();
+            return await this.context.Categories.ToListAsync();
         }
 
         public async Task<Category> GetById(int id)

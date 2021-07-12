@@ -50,6 +50,7 @@ namespace ITLexiconAPI
             services.AddTransient<ICategoryRepo, CategoryRepo>();
             services.AddTransient<IArticleRepo, ArticleRepo>();
             services.AddTransient<ILinkedRepo, LinkedRepo>();
+            services.AddTransient<IChangelogRepo, ChanglogRepo>();
             services.AddTransient<ICategoryBLRepo, CategoryBLRepo>();
             services.AddTransient<IArticleBLRepo, ArticleBLRepo>();
             services.AddTransient<ILinkedBLRepo, LinkedBLRepo>();
