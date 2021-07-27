@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,10 +10,11 @@ namespace ITLexiconAPI.DataAccessLayer.Models
     public class Article
     {
         [BsonId]
-        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
         public string Title { get; set; }
-        public string Content { get; set; }        
+        public string Content { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
         public string CategoryId { get; set; }       
     }
 }

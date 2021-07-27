@@ -24,7 +24,7 @@ namespace ITLexiconAPI.Controllers
             this.linkedRepo = linkedRepo;
         }
         [Route("{maskId}")]
-        public async Task<ActionResult<List<ArticleDto>>> GetLinkedArticles(Guid maskId)
+        public async Task<ActionResult<List<ArticleDto>>> GetLinkedArticles(string maskId)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace ITLexiconAPI.Controllers
                 LinkedArticleOverviewDto overviewDto = new LinkedArticleOverviewDto()
                 {
                     MainArticle = allArticles.FirstOrDefault(m => m.Id == maskId),
-                    //LinkedArticles = await linkedRepo.GetLinkedItems(maskId),
+                    LinkedArticles = await linkedRepo.GetLinkedItems(maskId),
                     AllArticles = allArticles
                 };
                 return Ok(overviewDto);

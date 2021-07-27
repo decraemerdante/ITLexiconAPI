@@ -7,7 +7,7 @@ namespace ITLexiconAPI.BusinessLayer.DTO
 {
     public class LinkedArticlesDto
     {
-        public Guid ArticleId { get; set; }
-        public Guid LinkedArticleId { get; set; }
+        public string ArticleId { get; set; }
+        public string LinkedArticleId { get; set; }
     }
 }

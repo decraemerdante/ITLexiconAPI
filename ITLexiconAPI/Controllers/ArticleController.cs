@@ -32,7 +32,9 @@ namespace ITLexiconAPI.Controllers
                 List<ArticleDto> articles = await articleRepo.Get();
                 return Ok(mapper.Map<List<ArticleDto>>(articles));
             }
-            catch (Exception e) { }
+            catch (Exception e) 
+            {
+            }
 
             return BadRequest("Something went wrong");
         }
@@ -45,17 +47,8 @@ namespace ITLexiconAPI.Controllers
                 ArticleDto articleDto = await articleRepo.Get(maskId);
 
                 if (articleDto != null)
-                {
-                   
-                    CategoryDto cat = new CategoryDto();
-
-                    if (string.IsNullOrEmpty(articleDto.CategoryId))
-                        cat = await categoryRepo.Get(articleDto.CategoryId);
-
-                    if (cat != null)
-                        articleDto.CategoryId = cat.Id;
-
-                    return Ok(articleDto);
+                {                 
+                  return Ok(articleDto);
                 }
 
 

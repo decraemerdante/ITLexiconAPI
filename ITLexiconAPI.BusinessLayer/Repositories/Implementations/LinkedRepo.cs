@@ -22,62 +22,48 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
             this.linkedRepo = linkedRepo;
         }
 
-        public Task<List<ArticleDto>> GetLinkedItems(Guid maskId)
+        public async Task<List<ArticleDto>> GetLinkedItems(string maskId)
         {
-            throw new NotImplementedException();
+            List<Article> linkedArticles = new List<Article>();
+
+            List<LinkedArticles> linkedArticlesObjects = await linkedRepo.GetLinkedArticles(maskId);
+
+            linkedArticles = await articleRepo.GetArticlesByIds(linkedArticlesObjects.Select(m => m.LinkedArticleId).ToList());
+
+            return mapper.Map<List<ArticleDto>>(linkedArticles);
+        }
+       
+        public async Task HandleLinkedArticleAction(string articleId, string linkedArticleId, bool isDelete = false)
+        {
+            List<Article> articles = await GetLinkedArticleArticles(articleId, linkedArticleId);
+
+            if (articles != null && articles.Any() && articles.Count == 2)
+            {
+                Article firstArticle = articles.FirstOrDefault();
+                Article lastArticle = articles.LastOrDefault();
+
+                if (isDelete)
+                {
+                    await linkedRepo.Delete(firstArticle, lastArticle);
+                    await linkedRepo.Delete(lastArticle, firstArticle);
+                }
+                else
+                {
+                    await linkedRepo.Add(firstArticle, lastArticle);
+                    await linkedRepo.Add(lastArticle, firstArticle);
+                }
+            }
         }
 
-        public Task HandleLinkedArticleAction(Guid articleId, Guid linkedArticleId, bool isDelete = false)
+        private async Task<List<Article>> GetLinkedArticleArticles(string articleId, string linkedArticleId)
         {
-            throw new NotImplementedException();
+            List<string> neededArticles = new List<string>()
+            {
+                articleId,
+                linkedArticleId
+            };
+
+            return await articleRepo.GetArticlesByIds(neededArticles);
         }
-        //public async Task<List<ArticleDto>> GetLinkedItems(Guid maskId)
-        //{
-        //    List<Article> linkedArticles = new List<Article>();
-
-        //    Article article = await articleRepo.GetArticleWithLinkedArticles(maskId);
-
-        //    if (article != null && article.LinkedArticles != null && article.LinkedArticles.Any())
-        //    {
-        //        List<int> linkedArticleIds = article.LinkedArticles.Select(m => m.LinkedArticleId).ToList();
-
-        //        linkedArticles = await articleRepo.GetArticlesByIds(linkedArticleIds);
-        //    }
-
-        //    return mapper.Map<List<ArticleDto>>(linkedArticles);
-        //}        
-
-        //public async Task HandleLinkedArticleAction(Guid articleId, Guid linkedArticleId, bool isDelete = false)
-        //{
-        //    List<Article> articles = await GetLinkedArticleArticles(articleId, linkedArticleId);
-
-        //    if (articles != null && articles.Any() && articles.Count == 2)
-        //    {
-        //        Article firstArticle = articles.FirstOrDefault();
-        //        Article lastArticle = articles.LastOrDefault();
-
-        //        if (isDelete)
-        //        {
-        //            await linkedRepo.Delete(firstArticle, lastArticle);
-        //            await linkedRepo.Delete(lastArticle, firstArticle);
-        //        }
-        //        else
-        //        {
-        //            await linkedRepo.Add(firstArticle, lastArticle);
-        //            await linkedRepo.Add(lastArticle, firstArticle);
-        //        }
-        //    }
-        //}
-
-        //private async Task<List<Article>> GetLinkedArticleArticles(Guid articleId, Guid linkedArticleId)
-        //{
-        //    List<Guid> neededArticles = new List<Guid>()
-        //    {
-        //        articleId,
-        //        linkedArticleId
-        //    };
-
-        //    return await articleRepo.GetArticlesByIds(neededArticles);
-        //}
     }
 }

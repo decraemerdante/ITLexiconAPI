@@ -34,6 +34,10 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
                     article.CategoryId = category.Id;
                 }
             }
+            else
+            {
+                article.CategoryId = null;
+            }
 
             Article createdArticle = await articleRepo.Add(mapper.Map<Article>(article));          
 
@@ -67,8 +71,11 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
         public async Task Update(ArticleDto articleNew)
         {
             Article articleOld = await articleRepo.Get(articleNew.Id);
-
-            if(articleOld != null)
+            if (string.IsNullOrEmpty(articleNew.CategoryId))
+            {
+                articleNew.CategoryId = null;
+            }
+            if (articleOld != null)
             {
                 await articleRepo.Update(
                      articleOld,

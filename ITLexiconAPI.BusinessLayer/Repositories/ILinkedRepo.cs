@@ -8,7 +8,7 @@ namespace ITLexiconAPI.BusinessLayer.Repositories
 {
     public interface ILinkedBLRepo
     {
-        Task<List<ArticleDto>> GetLinkedItems(Guid maskId);
-        Task HandleLinkedArticleAction(Guid articleId, Guid linkedArticleId, bool isDelete = false);
+        Task<List<ArticleDto>> GetLinkedItems(string maskId);
+        Task HandleLinkedArticleAction(string articleId, string linkedArticleId, bool isDelete = false);
     }
 }

@@ -10,5 +10,6 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories
     {
         Task Delete(Article article, Article linkedArticle);
         Task Add(Article article, Article LinkedArticle);
+        Task<List<LinkedArticles>> GetLinkedArticles(string maskId);
     }
 }
