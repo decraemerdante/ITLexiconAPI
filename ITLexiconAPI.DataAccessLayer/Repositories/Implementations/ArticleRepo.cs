@@ -1,6 +1,7 @@
 ﻿using ITLexiconAPI.DataAccessLayer.DB;
 using ITLexiconAPI.DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,64 +12,53 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
 {
     public class ArticleRepo : IArticleRepo
     {
-        private LexiconContext context;
-
-        public ArticleRepo(LexiconContext context)
+        private readonly IMongoCollection<Article> articles;
+        public ArticleRepo(IDatabaseSettings settings)
         {
-            this.context = context;
+            var client = new MongoClient(settings.ConnectionString);
+            var database = client.GetDatabase(settings.DatabaseName);
+
+            articles = database.GetCollection<Article>(settings.ArticleCollectionName);
         }
         public async Task<Article> Add(Article article)
         {
-            await this.context.AddAsync(article);
-            await this.context.SaveChangesAsync();
-
-            return article;
-        }     
-
-        public async Task Delete(Article article)
-        {
-            this.context.Remove(article);
-            await this.context.SaveChangesAsync();
+           await articles.InsertOneAsync(article);
+           return article;
         }
 
-        public async Task<Article> Get(Guid maskId)
+        public async Task Delete(Article articleToDelete)
         {
-            return await this.context.Articles.Include(m => m.Changelogs).FirstOrDefaultAsync(a => a.MaskId == maskId);
+           await articles.DeleteOneAsync(article => article.Id == articleToDelete.Id);
+        }
+
+        public async Task<Article> Get(string maskId)
+        {
+            return await articles.Find<Article>(article => article.Id == maskId).FirstOrDefaultAsync();
         }
 
         public async Task<List<Article>> Get()
         {
-            return await this.context.Articles.Include(m => m.Changelogs).ToListAsync();
+           return await articles.Find(article => true).ToListAsync();
         }
 
-        public async Task<List<Article>> GetArticlesByIds(List<int> articleIds)
+        public async Task<List<Article>> GetArticlesByIds(List<string> articleIds)
         {
-            return await this.context.Articles.Include(m => m.LinkedArticles).Include(m => m.Changelogs).Where(m => articleIds.Contains(m.Id)).ToListAsync();
+            return await articles.Find(article => articleIds.Contains(article.Id)).ToListAsync();
+        }      
+
+        public Task<Article> GetArticleWithLinkedArticles(string maskId)
+        {
+            throw new NotImplementedException();
         }
 
-        public async Task<List<Article>> GetArticlesByIds(List<Guid> articleIds)
+        public async Task<List<Article>> GetByCategory(string maskId)
         {
-            return await this.context.Articles.Include(m => m.LinkedArticles).Include(m => m.Changelogs).Where(m => articleIds.Contains(m.MaskId)).ToListAsync();
-        }
-    
-
-        public async Task<Article> GetArticleWithLinkedArticles(Guid maskId)
-        {
-           return await this.context.Articles.Include(a => a.LinkedArticles).Include(m => m.Changelogs).FirstOrDefaultAsync(a => a.MaskId == maskId);
+            return await articles.Find(article => article.CategoryId == maskId).ToListAsync();
         }
 
-        public async Task<List<Article>> GetByCategory(Guid maskId)
+        public async Task Update(Article articleOld, Article articleNew)
         {
-            return await this.context.Articles.Include(a => a.Category).Include(m => m.Changelogs).Where(a => a.CategoryId.HasValue && a.Category.MaskId == maskId).ToListAsync();
-        }    
-
-        public async Task Update(Article article, Article articleNew)
-        {
-            article.Title = articleNew.Title;
-            article.Content = articleNew.Content;
-            article.CategoryId = articleNew.CategoryId;
-
-            await this.context.SaveChangesAsync();
-        }       
+            await articles.ReplaceOneAsync(article => article.Id == articleOld.Id, articleNew);
+        }
     }
 }

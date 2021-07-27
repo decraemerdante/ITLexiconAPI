@@ -21,23 +21,19 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
             this.mapper = mapper;
             this.linkedRepo = linkedRepo;
         }
-        public async Task<List<ArticleDto>> GetLinkedItems(Guid maskId)
+
+        public async Task<List<ArticleDto>> GetLinkedItems(string maskId)
         {
             List<Article> linkedArticles = new List<Article>();
 
-            Article article = await articleRepo.GetArticleWithLinkedArticles(maskId);
+            List<LinkedArticles> linkedArticlesObjects = await linkedRepo.GetLinkedArticles(maskId);
 
-            if (article != null && article.LinkedArticles != null && article.LinkedArticles.Any())
-            {
-                List<int> linkedArticleIds = article.LinkedArticles.Select(m => m.LinkedArticleId).ToList();
-
-                linkedArticles = await articleRepo.GetArticlesByIds(linkedArticleIds);
-            }
+            linkedArticles = await articleRepo.GetArticlesByIds(linkedArticlesObjects.Select(m => m.LinkedArticleId).ToList());
 
             return mapper.Map<List<ArticleDto>>(linkedArticles);
-        }        
-
-        public async Task HandleLinkedArticleAction(Guid articleId, Guid linkedArticleId, bool isDelete = false)
+        }
+       
+        public async Task HandleLinkedArticleAction(string articleId, string linkedArticleId, bool isDelete = false)
         {
             List<Article> articles = await GetLinkedArticleArticles(articleId, linkedArticleId);
 
@@ -59,9 +55,9 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
             }
         }
 
-        private async Task<List<Article>> GetLinkedArticleArticles(Guid articleId, Guid linkedArticleId)
+        private async Task<List<Article>> GetLinkedArticleArticles(string articleId, string linkedArticleId)
         {
-            List<Guid> neededArticles = new List<Guid>()
+            List<string> neededArticles = new List<string>()
             {
                 articleId,
                 linkedArticleId

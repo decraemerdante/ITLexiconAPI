@@ -19,14 +19,11 @@ namespace ITLexiconAPI.DataAccessLayer.DB
 
         public DbSet<LinkedArticles> LinkedArticles { get; set; }
 
-        public DbSet<Changelog> Changelogs { get; set; }
-
+       
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<Article>().Property(x => x.MaskId).HasDefaultValueSql("newsequentialid()");
-            modelBuilder.Entity<Category>().Property(x => x.MaskId).HasDefaultValueSql("newsequentialid()");
+            base.OnModelCreating(modelBuilder);          
+            
 
         }
     }

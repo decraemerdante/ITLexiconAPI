@@ -32,30 +32,23 @@ namespace ITLexiconAPI.Controllers
                 List<ArticleDto> articles = await articleRepo.Get();
                 return Ok(mapper.Map<List<ArticleDto>>(articles));
             }
-            catch (Exception e) { }
+            catch (Exception e) 
+            {
+            }
 
             return BadRequest("Something went wrong");
         }
 
         [Route("{maskId}")]
-        public async Task<ActionResult<ArticleDto>> Get(Guid maskId)
+        public async Task<ActionResult<ArticleDto>> Get(string maskId)
         {
             try
             {
                 ArticleDto articleDto = await articleRepo.Get(maskId);
 
                 if (articleDto != null)
-                {
-                   
-                    CategoryDto cat = new CategoryDto();
-
-                    if (articleDto.CategoryId.HasValue)
-                        cat = await categoryRepo.GetById(articleDto.CategoryId.Value);
-
-                    if (cat != null)
-                        articleDto.CategoryMaskId = cat.MaskId;
-
-                    return Ok(articleDto);
+                {                 
+                  return Ok(articleDto);
                 }
 
 
@@ -67,7 +60,7 @@ namespace ITLexiconAPI.Controllers
         }
 
         [Route("Category/{maskId}")]
-        public async Task<ActionResult<List<ArticleDto>>> GetByCategory(Guid maskId)
+        public async Task<ActionResult<List<ArticleDto>>> GetByCategory(string maskId)
         {
             try
             {
@@ -88,7 +81,7 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {               
-                Guid maskId = await articleRepo.Add(article);
+                string maskId = await articleRepo.Add(article);
                 return Ok(maskId.ToString());
             }
             catch (Exception e) { }
@@ -120,7 +113,7 @@ namespace ITLexiconAPI.Controllers
 
         #region Delete
         [HttpDelete]
-        public async Task<ActionResult> Delete(Guid maskId)
+        public async Task<ActionResult> Delete(string maskId)
         {
             try
             {

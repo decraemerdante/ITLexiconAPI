@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,16 +45,21 @@ namespace ITLexiconAPI
              });
 
             });
+            services.Configure<DatabaseSettings>(
+               Configuration.GetSection(nameof(DatabaseSettings)));
+
+            services.AddTransient<IDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
             services.AddControllers();
             services.AddSwaggerDocument();
             services.AddDbContext<LexiconContext>(item => item.UseSqlServer(Configuration.GetConnectionString("ITLexiconDB")));
             services.AddTransient<ICategoryRepo, CategoryRepo>();
             services.AddTransient<IArticleRepo, ArticleRepo>();
-            services.AddTransient<ILinkedRepo, LinkedRepo>();
-            services.AddTransient<IChangelogRepo, ChanglogRepo>();
+            services.AddTransient<ILinkedRepo, LinkedRepo>();          
             services.AddTransient<ICategoryBLRepo, CategoryBLRepo>();
             services.AddTransient<IArticleBLRepo, ArticleBLRepo>();
             services.AddTransient<ILinkedBLRepo, LinkedBLRepo>();
+
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new ArticleProfile());
@@ -62,7 +68,9 @@ namespace ITLexiconAPI
 
             IMapper mapper = mapperConfig.CreateMapper();
 
-            services.AddSingleton(mapper);                  
+            services.AddSingleton(mapper);
+
+           
 
         }
 

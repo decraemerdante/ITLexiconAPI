@@ -9,10 +9,9 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories
     public interface ICategoryRepo
     {
         Task Add(Category category);
-        Task<Category> Get(Guid maskId);
+        Task<Category> Get(string maskId);
         Task<List<Category>> Get();
         Task Delete(Category category);
         Task Update(Category category, string name);
-        Task<Category> GetById(int id);
     }
 }
