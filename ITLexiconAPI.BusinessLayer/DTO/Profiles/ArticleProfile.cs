@@ -12,9 +12,7 @@ namespace ITLexiconAPI.BusinessLayer.DTO.Profiles
         public ArticleProfile()
         {
             CreateMap<ArticleDto, Article>();
-            CreateMap<Article, ArticleDto>();
-            CreateMap<Changelog, ChangeLogDto>();
-            CreateMap<ChangeLogDto, Changelog>();
+            CreateMap<Article, ArticleDto>();         
         }
     }
 }

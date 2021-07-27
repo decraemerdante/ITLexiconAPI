@@ -35,7 +35,7 @@ namespace ITLexiconAPI.Controllers
         }
 
         [Route("{maskId}")]
-        public async Task<ActionResult<CategoryDto>> Get(Guid maskId)
+        public async Task<ActionResult<CategoryDto>> Get(string maskId)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace ITLexiconAPI.Controllers
         
 
         [HttpDelete]
-        public async Task<ActionResult> Delete(Guid maskId)
+        public async Task<ActionResult> Delete(string maskId)
         {
             try
             {

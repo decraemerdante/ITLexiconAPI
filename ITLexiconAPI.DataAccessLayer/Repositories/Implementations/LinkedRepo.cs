@@ -11,33 +11,14 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
 {
     public class LinkedRepo : ILinkedRepo
     {
-
-        private LexiconContext context;
-
-        public LinkedRepo(LexiconContext context)
+        public Task Add(Article article, Article LinkedArticle)
         {
-            this.context = context;
-        }     
-
-        public async Task Delete(Article article, Article linkedArticle)
-        {
-            LinkedArticles linkedArticles = await this.context.LinkedArticles.FirstOrDefaultAsync(m => m.ArticleId == article.Id && m.LinkedArticleId == linkedArticle.Id);
-
-            if (linkedArticles != null)
-            {
-                this.context.LinkedArticles.Remove(linkedArticles);
-                await this.context.SaveChangesAsync();
-            }
+            throw new NotImplementedException();
         }
 
-        public async Task Add(Article article, Article LinkedArticle)
+        public Task Delete(Article article, Article linkedArticle)
         {
-            article.LinkedArticles.Add(new LinkedArticles()
-            {
-                LinkedArticleId = LinkedArticle.Id
-            });
-            await this.context.SaveChangesAsync();
-        }      
-       
+            throw new NotImplementedException();
+        }
     }
 }

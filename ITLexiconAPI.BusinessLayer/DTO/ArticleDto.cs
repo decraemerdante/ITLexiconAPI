@@ -9,10 +9,9 @@ namespace ITLexiconAPI.BusinessLayer.DTO
     {
         public string Title { get; set; }
         public string Content { get; set; }
-        public Guid MaskId { get; set; }
-        public int? CategoryId { get; set; }
-        public Guid? CategoryMaskId { get; set; }
+        public string Id { get; set; }
+        public string CategoryId { get; set; }    
 
-        public List<ChangeLogDto> ChangeLogs { get; set; }
+    
     }
 }

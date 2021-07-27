@@ -14,21 +14,20 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
         private IArticleRepo articleRepo;
         private IMapper mapper;
         private ICategoryRepo categoryRepo;
-        private  IChangelogRepo changelogRepo;
+       
 
-        public ArticleBLRepo(IArticleRepo articleRepo, IMapper mapper, ICategoryRepo categoryRepo, IChangelogRepo changelogRepo)
+        public ArticleBLRepo(IArticleRepo articleRepo, IMapper mapper, ICategoryRepo categoryRepo)
         {
             this.articleRepo = articleRepo;
             this.mapper = mapper;
-            this.categoryRepo = categoryRepo;
-            this.changelogRepo = changelogRepo;
+            this.categoryRepo = categoryRepo;            
         }
-        public async Task<Guid> Add(ArticleDto article)
+        public async Task<string> Add(ArticleDto article)
         {
 
-            if (article.CategoryMaskId.HasValue && article.CategoryMaskId != Guid.Empty)
+            if (article.CategoryId != null && !string.IsNullOrEmpty(article.CategoryId))
             {
-                Category category = await categoryRepo.Get(article.CategoryMaskId.Value);
+                Category category = await categoryRepo.Get(article.CategoryId);
 
                 if (category != null)
                 {
@@ -36,24 +35,21 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
                 }
             }
 
-            Article createdArticle = await articleRepo.Add(mapper.Map<Article>(article));
+            Article createdArticle = await articleRepo.Add(mapper.Map<Article>(article));          
 
-            await changelogRepo.Add(createdArticle, Changelog.LogItemEnum.CREATED);
-
-            return createdArticle.MaskId;
+            return createdArticle.Id;
         }
 
-        public async Task Delete(Guid maskId)
+        public async Task Delete(string maskId)
         {
             Article articleToDelete = await articleRepo.Get(maskId);
             if(articleToDelete != null)
-            {
-                await changelogRepo.DeleteChangelogsOfArticle(articleToDelete);
+            {               
                 await articleRepo.Delete(articleToDelete);
             }            
         }
 
-        public async Task<ArticleDto> Get(Guid maskId)
+        public async Task<ArticleDto> Get(string maskId)
         {
             return mapper.Map<ArticleDto>(await articleRepo.Get(maskId));
         }
@@ -63,21 +59,20 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
            return mapper.Map<List<ArticleDto>>(await articleRepo.Get());
         }
 
-        public async Task<List<ArticleDto>> GetByCategory(Guid maskId)
+        public async Task<List<ArticleDto>> GetByCategory(string maskId)
         {
             return mapper.Map<List<ArticleDto>>(await articleRepo.GetByCategory(maskId));
         }
 
         public async Task Update(ArticleDto articleNew)
         {
-            Article articleOld = await articleRepo.Get(articleNew.MaskId);
+            Article articleOld = await articleRepo.Get(articleNew.Id);
 
             if(articleOld != null)
             {
                 await articleRepo.Update(
                      articleOld,
-                     mapper.Map<Article>(articleNew));
-                await changelogRepo.Add(articleOld, Changelog.LogItemEnum.UPDATED);
+                     mapper.Map<Article>(articleNew));               
             }         
         }
     }

@@ -25,13 +25,13 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
             await categoryRepo.Add(mapper.Map<Category>(category));
         }
 
-        public async Task Delete(Guid maskId)
+        public async Task Delete(string maskId)
         {
             Category category = await categoryRepo.Get(maskId);
             await categoryRepo.Delete(category);
         }
 
-        public async Task<CategoryDto> Get(Guid maskId)
+        public async Task<CategoryDto> Get(string maskId)
         {
             return mapper.Map<CategoryDto>(await categoryRepo.Get(maskId));
         }
@@ -39,16 +39,11 @@ namespace ITLexiconAPI.BusinessLayer.Repositories.Implementations
         public async Task<List<CategoryDto>> Get()
         {
             return mapper.Map<List<CategoryDto>>(await categoryRepo.Get());
-        }
-
-        public async Task<CategoryDto> GetById(int id)
-        {
-            return mapper.Map<CategoryDto>(await categoryRepo.GetById(id));
-        }
+        }      
 
         public async Task Update(CategoryDto newCategory)
         {
-            Category category = await categoryRepo.Get(newCategory.MaskId);
+            Category category = await categoryRepo.Get(newCategory.Id);
 
             if(category != null)
             {

@@ -8,11 +8,11 @@ namespace ITLexiconAPI.BusinessLayer.Repositories
 {
     public interface IArticleBLRepo
     {
-        Task<Guid> Add(ArticleDto article);
-        Task<ArticleDto> Get(Guid maskId);
+        Task<string> Add(ArticleDto article);
+        Task<ArticleDto> Get(string maskId);
         Task<List<ArticleDto>> Get();
-        Task Delete(Guid maskId);
+        Task Delete(string maskId);
         Task Update(ArticleDto articleNew);
-        Task<List<ArticleDto>> GetByCategory(Guid maskId);
+        Task<List<ArticleDto>> GetByCategory(string maskId);
     }
 }

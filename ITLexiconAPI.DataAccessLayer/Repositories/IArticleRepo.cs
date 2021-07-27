@@ -9,13 +9,12 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories
     public interface IArticleRepo
     {
         Task<Article> Add(Article article);
-        Task<Article> Get(Guid maskId);
+        Task<Article> Get(string maskId);
         Task<List<Article>> Get();
         Task Delete(Article article);
         Task Update(Article article, Article articleNew);
-        Task<List<Article>> GetByCategory(Guid maskId);
-        Task<Article> GetArticleWithLinkedArticles(Guid maskId);
-        Task<List<Article>> GetArticlesByIds(List<Guid> articleIds);
-        Task<List<Article>> GetArticlesByIds(List<int> articleIds);
+        Task<List<Article>> GetByCategory(string maskId);
+        Task<Article> GetArticleWithLinkedArticles(string maskId);
+        Task<List<Article>> GetArticlesByIds(List<string> articleIds);       
     }
 }

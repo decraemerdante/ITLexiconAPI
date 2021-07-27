@@ -1,6 +1,7 @@
 ﻿using ITLexiconAPI.DataAccessLayer.DB;
 using ITLexiconAPI.DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,52 +12,39 @@ namespace ITLexiconAPI.DataAccessLayer.Repositories.Implementations
 {
     public class CategoryRepo : ICategoryRepo
     {
-        private LexiconContext context;
-
-        public CategoryRepo(LexiconContext context)
+        private readonly IMongoCollection<Category> categories;
+        public CategoryRepo(IDatabaseSettings settings)
         {
-            this.context = context;
-        }
+            var client = new MongoClient(settings.ConnectionString);
+            var database = client.GetDatabase(settings.DatabaseName);
 
+            categories = database.GetCollection<Category>(settings.CategoryCollectionName);
+        }
 
         public async Task Add(Category category)
         {
-            await this.context.Categories.AddAsync(category);
-            await this.context.SaveChangesAsync();
+            await categories.InsertOneAsync(category);
         }
 
-        public async Task Delete(Category category)
+        public async Task Delete(Category categoryToDelete)
         {
-            List<Article> articlesOfCategory = await this.context.Articles.Where(m => m.CategoryId == category.Id).ToListAsync();
-
-            foreach (var article in articlesOfCategory)
-            {
-                article.CategoryId = null;
-            }
-            this.context.Categories.Remove(category);
-            await this.context.SaveChangesAsync();
+            await categories.DeleteOneAsync(category => category.Id == categoryToDelete.Id);
         }
 
-        public async Task<Category> Get(Guid maskId)
+        public async Task<Category> Get(string maskId)
         {
-            return await this.context.Categories.Include(c => c.Articles).FirstOrDefaultAsync(c => c.MaskId == maskId);
+            return await categories.Find<Category>(category => category.Id == maskId).FirstOrDefaultAsync();
         }
 
         public async Task<List<Category>> Get()
         {
-            return await this.context.Categories.ToListAsync();
+            return await categories.Find(category => true).ToListAsync();
         }
 
-        public async Task<Category> GetById(int id)
+        public async Task Update(Category categoryOld, string name)
         {
-            return await this.context.Categories.FirstOrDefaultAsync(m => m.Id == id);
-        }
-
-        public async Task Update(Category category, string name)
-        {
-            category.Name = name;
-
-            await this.context.SaveChangesAsync();
+            categoryOld.Name = name;
+            await categories.ReplaceOneAsync(category => category.Id == categoryOld.Id, categoryOld);
         }
     }
 }

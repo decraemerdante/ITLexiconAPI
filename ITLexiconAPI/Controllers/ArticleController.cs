@@ -38,7 +38,7 @@ namespace ITLexiconAPI.Controllers
         }
 
         [Route("{maskId}")]
-        public async Task<ActionResult<ArticleDto>> Get(Guid maskId)
+        public async Task<ActionResult<ArticleDto>> Get(string maskId)
         {
             try
             {
@@ -49,11 +49,11 @@ namespace ITLexiconAPI.Controllers
                    
                     CategoryDto cat = new CategoryDto();
 
-                    if (articleDto.CategoryId.HasValue)
-                        cat = await categoryRepo.GetById(articleDto.CategoryId.Value);
+                    if (string.IsNullOrEmpty(articleDto.CategoryId))
+                        cat = await categoryRepo.Get(articleDto.CategoryId);
 
                     if (cat != null)
-                        articleDto.CategoryMaskId = cat.MaskId;
+                        articleDto.CategoryId = cat.Id;
 
                     return Ok(articleDto);
                 }
@@ -67,7 +67,7 @@ namespace ITLexiconAPI.Controllers
         }
 
         [Route("Category/{maskId}")]
-        public async Task<ActionResult<List<ArticleDto>>> GetByCategory(Guid maskId)
+        public async Task<ActionResult<List<ArticleDto>>> GetByCategory(string maskId)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace ITLexiconAPI.Controllers
         {
             try
             {               
-                Guid maskId = await articleRepo.Add(article);
+                string maskId = await articleRepo.Add(article);
                 return Ok(maskId.ToString());
             }
             catch (Exception e) { }
@@ -120,7 +120,7 @@ namespace ITLexiconAPI.Controllers
 
         #region Delete
         [HttpDelete]
-        public async Task<ActionResult> Delete(Guid maskId)
+        public async Task<ActionResult> Delete(string maskId)
         {
             try
             {

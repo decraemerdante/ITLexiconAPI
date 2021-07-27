@@ -51,15 +51,15 @@ namespace ITLexiconAPI.Controllers
         }
 
         [Route("Overview/{maskId}")]
-        public async Task<ActionResult<LinkedArticleOverviewDto>> GetLinkedArticlesOverview(Guid maskId)
+        public async Task<ActionResult<LinkedArticleOverviewDto>> GetLinkedArticlesOverview(string maskId)
         {
             try
             {
                 List<ArticleDto> allArticles = await articleRepo.Get();
                 LinkedArticleOverviewDto overviewDto = new LinkedArticleOverviewDto()
                 {
-                    MainArticle = allArticles.FirstOrDefault(m => m.MaskId == maskId),
-                    LinkedArticles = await linkedRepo.GetLinkedItems(maskId),
+                    MainArticle = allArticles.FirstOrDefault(m => m.Id == maskId),
+                    //LinkedArticles = await linkedRepo.GetLinkedItems(maskId),
                     AllArticles = allArticles
                 };
                 return Ok(overviewDto);
