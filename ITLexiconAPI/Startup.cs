@@ -52,7 +52,6 @@ namespace ITLexiconAPI
                 sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
             services.AddControllers();
             services.AddSwaggerDocument();
-            services.AddDbContext<LexiconContext>(item => item.UseSqlServer(Configuration.GetConnectionString("ITLexiconDB")));
             services.AddTransient<ICategoryRepo, CategoryRepo>();
             services.AddTransient<IArticleRepo, ArticleRepo>();
             services.AddTransient<ILinkedRepo, LinkedRepo>();          
