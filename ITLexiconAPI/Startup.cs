@@ -40,7 +40,7 @@ namespace ITLexiconAPI
                 options.AddDefaultPolicy(
              builder =>
              {
-                 builder.WithOrigins("http://localhost:4200", "https://it-lexicon-app.azurewebsites.net").AllowAnyHeader().AllowAnyMethod();
+                 builder.WithOrigins("http://localhost:4200", "https://ptc-lexicon-app.azurewebsites.net").AllowAnyHeader().AllowAnyMethod();
 
              });
 
